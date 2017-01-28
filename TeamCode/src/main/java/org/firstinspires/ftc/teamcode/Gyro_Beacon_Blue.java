@@ -108,7 +108,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         waitForStart();
 
         /*
-         *****************  Main Control **********************
+         *****************  Main Control ***********************
          */
 
         // get lined up
