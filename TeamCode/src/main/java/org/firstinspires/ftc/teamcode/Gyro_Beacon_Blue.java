@@ -45,6 +45,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     // Output of the go_straight_adjustment function
     double power_adjustment_L;
     double power_adjustment_R;
+    // Output of the go_straight function
     boolean found_white = false;
 
     //Btn_Servo Variables
@@ -126,6 +127,12 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         turn_to_heading(90);
         go_forward(14, 90, .5, false);
 
+        // hit first beacon
+        button_push("blue");
+
+        // back up, get lined up
+        go_forward(2, 100, -.5, false);
+
         // shoot balls
         Shoot();
         ball_gate_servo.setPosition(0);
@@ -134,16 +141,13 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         sleep(300);
         ball_gate_servo.setPosition(1);
 
-
-        // hit first beacon
-        button_push("blue");
-
         // back up, get lined up
-        go_forward(8, 90, -1, false);
+        go_forward(6, 100, -1, false);
         turn_to_heading(0);
+        // go_forward(2, 0, .5, false);  // get off the white line
 
         // go to second white line
-        go_forward(54, 0, 1, true);
+        go_forward(52, 0, 1, true);
         go_forward(8, 0, -.3, true);
         turn_to_heading(90);
         go_forward(14, 90, .5, false);
@@ -160,7 +164,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     } // end of RunOpMode
 
 
-    public void Shoot() throws InterruptedException {
+    private void Shoot() {
         //Shooting Variables
         int shoot_target = 2880;
         int start_position_S;
@@ -173,7 +177,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     } // end of Shoot
 
 
-    public void turn_to_heading(double target_heading) {
+    private void turn_to_heading(double target_heading) {
         boolean go_right;
         double current_heading;
         double degrees_to_turn;
@@ -223,7 +227,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     } // end of turn_to_heading
 
 
-    public void go_straight_adjustment(int target_heading) {
+    private void go_straight_adjustment(int target_heading) {
 
         //  This function outputs global variables power_adjustment_R and power_adjustment_L
 
@@ -254,10 +258,10 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             power_adjustment_R = power_adjustment;
             power_adjustment_L = -power_adjustment;
         }
-    }
+    } // end of go_straight_adjustment
 
 
-    public void go_forward(double inches_to_travel, int starting_angle, double speed, boolean find_white) {
+    private void go_forward(double inches_to_travel, int starting_angle, double speed, boolean find_white) {
 
         double current_speed = .05;
         double ticks_to_travel;
@@ -314,13 +318,14 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         sleep(100);  // do we really need these?  Try without
 
     } // end of go_forward
-    
-    public void button_push(String BorR) {
+
+
+    private void button_push(String BorR) {
 
         int colorlevelRight;
         int colorlevelLeft;
         byte[] TempByte;
-        boolean button_pressed = false;
+        boolean button_pressed;
         double color_good = 8;
         int current_color = 0x07;
         
@@ -362,6 +367,6 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
             button_pressed = colorlevelLeft >= color_good && colorlevelRight >= color_good;
         }
-    }
+    }  // end of button_push
 }
 
