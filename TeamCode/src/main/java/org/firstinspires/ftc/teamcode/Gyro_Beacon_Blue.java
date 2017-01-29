@@ -55,10 +55,11 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
     //Other
     int Passive = 1;
-
+    double gate_closed_position = .9;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
         ODS = hardwareMap.opticalDistanceSensor.get("ods");
         leftWheel = hardwareMap.dcMotor.get("left_drive");
@@ -91,7 +92,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         rightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        ball_gate_servo.setPosition(1);
+        ball_gate_servo.setPosition(gate_closed_position);
 
         // start calibrating the gyro.
         telemetry.addData(">", "Gyro Calibrating. Do Not move!");
@@ -114,25 +115,25 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
          */
 
         // get lined up
-        go_forward(3, 0, .5, false);
+        go_forward(3, 0, .5, false, false);
         turn_to_heading(30);
 
         // go to first white line
-        go_forward(72, 30, 1, true);
+        go_forward(72, 30, 1, true, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
-            go_forward(14, 0, -.3, true);
+            go_forward(14, 0, -.3, true, false);
         } else {
-            go_forward(6, 30, -.3, true);
+            go_forward(6, 30, -.3, true, false);
         }
         turn_to_heading(90);
-        go_forward(14, 90, .5, false);
+        go_forward(14, 90, .5, false, true);
 
         // hit first beacon
         button_push("blue");
 
         // back up, get lined up
-        go_forward(2, 90, -.5, false);
+        go_forward(2, 90, -.5, false, false);
 
         turn_to_heading(97);
 
@@ -144,25 +145,25 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         //ball_gate_servo.setPosition(1);
 
         // back up, get lined up
-        go_forward(10, 95, -1, false);
+        go_forward(10, 95, -1, false, false);
         turn_to_heading(0);
-        go_forward(2, 0, .5, false);  // get off the white line
+        go_forward(2, 0, .5, false, false);  // get off the white line
 
         // go to second white line
-        go_forward(51, 0, 1, true);
-        go_forward(8, 0, -.3, true);
+        go_forward(51, 0, 1, true, false);
+        go_forward(8, 0, -.3, true, false);
         turn_to_heading(90);
-        go_forward(14, 90, .5, false);
+        go_forward(14, 90, .5, false,true);
 
         // hit second beacon
         button_push("blue");
 
         // back up
-        go_forward(16, 90, -1, false);
+        go_forward(14, 90, -1, false, false);
 
         // turn toward center
-        turn_to_heading(225);
-        go_forward(50, 225, -1, false);
+        turn_to_heading(220);
+        go_forward(55, 220, 1, false, false);
 
         DbgLog.msg("10435 done");
 
@@ -172,7 +173,6 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     private void Shoot() {
 
         if (opModeIsActive()) {
-            double closed_position = .9;
             double open_position = 0;
             ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2880);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -180,14 +180,14 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             runtime.reset();
             while (opModeIsActive() && runtime.seconds() < 2 && ShootMotor.isBusy() ) {
                 sleep(10);
-                if (runtime.seconds() > .9 && runtime.seconds() < 1.5) {
+                if (runtime.seconds() > .4 && runtime.seconds() < .8) {
                     ball_gate_servo.setPosition(open_position);  // open the gate for another ball
-                } else if (runtime.seconds() > 1.8) {
-                    ball_gate_servo.setPosition(closed_position);  // close the gate
+                } else if (runtime.seconds() >= .8) {
+                    ball_gate_servo.setPosition(gate_closed_position);  // close the gate
                 }
             }
-
             ShootMotor.setPower(0);
+            ball_gate_servo.setPosition(gate_closed_position);  // close the gate
             ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     } // end of Shoot
@@ -204,14 +204,14 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         current_heading = gyro.getHeading();
         degrees_to_turn = Math.abs(target_heading - current_heading);
 
+        go_right = target_heading > current_heading;
+
+        if (degrees_to_turn > 180) {
+            go_right = !go_right;
+            degrees_to_turn = 360 - degrees_to_turn;
+        }
         while (degrees_to_turn > .5 && opModeIsActive()) {
 
-            go_right = target_heading > current_heading;
-
-            if (degrees_to_turn > 180) {
-                go_right = !go_right;
-                degrees_to_turn = 360 - degrees_to_turn;
-            }
             wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 10) / 100;
 
             if (go_right) {
@@ -224,6 +224,12 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             current_heading = gyro.getHeading();                                // get the new current reading
             degrees_to_turn = Math.abs(target_heading - current_heading);       // Calculate how far is remaining to turn
 
+            go_right = target_heading > current_heading;
+
+            if (degrees_to_turn > 180) {
+                go_right = !go_right;
+                degrees_to_turn = 360 - degrees_to_turn;
+            }
             //telemetry.addData("Wheel Power", wheel_power);
             //telemetry.addData("Degrees to Turn", degrees_to_turn);
             //telemetry.addData("Current Heading", current_heading);
@@ -233,7 +239,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         leftWheel.setPower(0);
         rightWheel.setPower(0);
-        //sleep(100);  // do we really need these?  Try without
+        sleep(100);
 
         DbgLog.msg("10435 ending turn_to_heading");
 
@@ -273,7 +279,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     } // end of go_straight_adjustment
 
 
-    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white) {
+    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, boolean use_touch_sensor) {
 
         DbgLog.msg("10435 starting go_forward");
 
@@ -315,9 +321,11 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             if (find_white) {
                 found_white = ODS.getLightDetected() > white_value;
             }
+            if (use_touch_sensor){
+              touch_sensor_pressed = touchSensor.isPressed();
+            }
 
             if (speed >= 0) {
-                touch_sensor_pressed = touchSensor.isPressed();  // only look at touch sensor if we're going forward
                 destination_reached =
                         ((leftWheel.getCurrentPosition() >= start_position_L + ticks_to_travel) ||
                                 (rightWheel.getCurrentPosition() >= start_position_R + ticks_to_travel));
@@ -337,7 +345,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         //telemetry.addData("go_forward found_white", found_white);
         //telemetry.update();
 
-        //sleep(100);  // do we really need sleep?  Try without
+        sleep(100);
         DbgLog.msg("10435 ending go_forward: opModeIsActive:" + Boolean.toString(opModeIsActive()) + " destination_reached:" + Boolean.toString(destination_reached)  + " found_white:" + Boolean.toString(found_white) + " touch_sensor_pressed:" + Boolean.toString(touch_sensor_pressed) );
 
     } // end of go_forward
@@ -393,7 +401,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             button_pressed = colorlevelLeft >= color_good && colorlevelRight >= color_good;
         }
 
-        //sleep(300);
+        sleep(300);
         DbgLog.msg("10435 ending button_push");
 
     }  // end of button_push
