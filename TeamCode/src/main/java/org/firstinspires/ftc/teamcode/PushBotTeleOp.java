@@ -32,6 +32,8 @@ public class PushBotTeleOp extends OpMode {
     double LiftSpeed = 1;
     double LeftSpeedInput;
     double RightSpeedInput;
+    double dpad_speed = .143;
+    double dpad_turn_speed = .16;
     double ServoPower;
     double LiftPower;
     boolean SlowMode = false;
@@ -97,17 +99,17 @@ public class PushBotTeleOp extends OpMode {
         RightSpeedInput = gamepad1.right_stick_y * Speed;
 
         if(gamepad1.dpad_up){
-            LeftSpeedInput = -.11;
-            RightSpeedInput = -.11;
+            LeftSpeedInput = -dpad_speed;
+            RightSpeedInput = -dpad_speed;
         } else if (gamepad1.dpad_down){
-            LeftSpeedInput = 0.11;
-            RightSpeedInput = 0.11;
+            LeftSpeedInput = dpad_speed;
+            RightSpeedInput = dpad_speed;
         } else if (gamepad1.dpad_left){
-            LeftSpeedInput = 0.11;
-            RightSpeedInput = -0.11;
+            LeftSpeedInput = dpad_turn_speed;
+            RightSpeedInput = -dpad_turn_speed;
         } else if (gamepad1.dpad_right){
-            LeftSpeedInput = -0.11;
-            RightSpeedInput = 0.11;
+            LeftSpeedInput = -dpad_turn_speed;
+            RightSpeedInput = dpad_turn_speed;
         }
 
         if (Reverse) {
