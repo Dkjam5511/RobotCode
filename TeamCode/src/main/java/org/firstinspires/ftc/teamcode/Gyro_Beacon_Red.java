@@ -142,7 +142,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         //ball_gate_servo.setPosition(1);
 
         // back up, get lined up
-        go_forward(8, 265, -1, false, false);
+        go_forward(5, 265, -1, false, false);
         turn_to_heading(0);
         go_forward(2, 0, .5, false, false);  // get off the white line
 
@@ -209,7 +209,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         }
         while (degrees_to_turn > .5 && opModeIsActive()) {
 
-            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 10) / 100;
+            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 50, 3) + 10) / 100;
 
             if (go_right) {
                 wheel_power = -wheel_power;
@@ -284,7 +284,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         double ticks_to_travel;
         boolean touch_sensor_pressed = false;
         boolean destination_reached = false;
-        double white_value = .28;
+        double white_value = .8;
         double speed_increase = .05;
         int start_position_L;
         int start_position_R;

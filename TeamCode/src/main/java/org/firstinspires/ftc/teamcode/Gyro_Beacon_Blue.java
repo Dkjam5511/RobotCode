@@ -112,55 +112,62 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
          */
 
         // get lined up
-        go_forward(3, 0, .5, false, false);
-        turn_to_heading(30);
+        go_forward(3, 0, .5, false, 0, false);
+        turn_to_heading(35);
 
         // go to first white line
-        go_forward(72, 30, 1, true, false);
+        go_forward(54, 30, 1, false, 0, false);
+        go_forward(12, 30, .3, true, 0, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
-            go_forward(14, 0, -.3, true, false);
+            go_forward(14, 0, -.3, true, 0, false);
         } else {
-            go_forward(6, 30, -.3, true, false);
+            //go_forward(2, 30, -.3, false, 0, false);
         }
         turn_to_heading(90);
-        go_forward(14, 90, .5, false, true);
+        go_forward(14, 90, .5, false, 0, true);
 
         // hit first beacon
         button_push("blue");
 
         // back up, get lined up
-        go_forward(2, 90, -.5, false, false);
+        go_forward(2, 90, -.5, false, 0, false);
 
         turn_to_heading(97);
 
         // shoot balls
         Shoot();
-        sleep(2000);  // wait for next ball to roll in
+        sleep(1200);  // wait for next ball to roll in
         Shoot();
         //sleep(300);
         //ball_gate_servo.setPosition(1);
 
         // back up, get lined up
-        go_forward(10, 95, -1, false, false);
+        go_forward(5, 95, -1, false, 0, false);
         turn_to_heading(0);
-        go_forward(2, 0, .5, false, false);  // get off the white line
 
         // go to second white line
-        go_forward(51, 0, 1, true, false);
-        go_forward(8, 0, -.3, true, false);
+        go_forward(44, 0, 1, false, 0, false);
+        go_forward(8, 0, .5, true, 0, false);
+
+        if (!found_white) {
+            turn_to_heading(345);  // If we missed the line, try to change angle before backing up.
+            go_forward(14, 345, -.3, true, 0, false);
+        } else {
+            //go_forward(4.5, 0, -.3, false, 0, false);
+        }
         turn_to_heading(90);
-        go_forward(14, 90, .5, false,true);
+        go_forward(14, 90, .5, false, 0, true);
 
         // hit second beacon
         button_push("blue");
 
         // back up
-        go_forward(14, 90, -1, false, false);
+        go_forward(14, 90, -1, false, 0, false);
 
         // turn toward center
-        turn_to_heading(220);
-        go_forward(55, 220, 1, false, false);
+        turn_to_heading(215);
+        go_forward(55, 215, 1, false, 0, false);
 
         DbgLog.msg("10435 done");
 
@@ -276,7 +283,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     } // end of go_straight_adjustment
 
 
-    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, boolean use_touch_sensor) {
+    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, int inches_till_check, boolean use_touch_sensor) {
 
         DbgLog.msg("10435 starting go_forward");
 
@@ -284,14 +291,16 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         double ticks_to_travel;
         boolean touch_sensor_pressed = false;
         boolean destination_reached = false;
-        double white_value = .28;
+        double white_value = .8;
         double speed_increase = .05;
         int start_position_L;
         int start_position_R;
+        int ticks_till_check;
         // Output of the go_straight_adjustment function
         double power_adjustment;
 
-        ticks_to_travel = inches_to_travel / 11.39 * 1440; // 11.39 is for matrix wheels which are 3.625 in diameter
+        ticks_to_travel = convert_inches_to_ticks(inches_to_travel);
+        ticks_till_check = convert_inches_to_ticks(inches_till_check);
 
         start_position_L = leftWheel.getCurrentPosition();
         start_position_R = rightWheel.getCurrentPosition();
@@ -315,7 +324,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             rightWheel.setPower(current_speed + power_adjustment);
             leftWheel.setPower(current_speed - power_adjustment);
 
-            if (find_white) {
+            if (find_white && leftWheel.getCurrentPosition() > ticks_till_check) {
                 found_white = ODS.getLightDetected() > white_value;
             }
             if (use_touch_sensor){
@@ -402,5 +411,12 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         DbgLog.msg("10435 ending button_push");
 
     }  // end of button_push
+
+    private int convert_inches_to_ticks(double inches) {
+        return (int) (inches / 11.39 * 1440);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
+    }
+
 }
+
+
 
