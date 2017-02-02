@@ -67,7 +67,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         ShootMotor = hardwareMap.dcMotor.get("shoot_motor");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
         CDI.setLED(0, true);           //Blue light On
-        CDI.setLED(1, false);           //Red light OFF
+        CDI.setLED(1, false);          //Red light OFF
 
         // Set up right beacon sensor
         ColorRight = hardwareMap.i2cDevice.get("cs_right");
@@ -116,8 +116,8 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         turn_to_heading(35);
 
         // go to first white line
-        go_forward(54, 30, 1, false, 0, false);
-        go_forward(12, 30, .3, true, 0, false);
+        go_forward(54, 35, 1, false, 0, false);
+        go_forward(12, 35, .3, true, 0, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 0, -.3, true, 0, false);
@@ -178,7 +178,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2880);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2640);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();
@@ -412,9 +412,10 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
     }  // end of button_push
 
+
     private int convert_inches_to_ticks(double inches) {
         return (int) (inches / 11.39 * 1440);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
-    }
+    }  // end of convert_inches_to_ticks
 
 }
 

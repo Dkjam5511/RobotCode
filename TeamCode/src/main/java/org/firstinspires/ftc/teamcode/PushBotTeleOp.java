@@ -5,8 +5,10 @@ package org.firstinspires.ftc.teamcode;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
         import com.qualcomm.robotcore.hardware.Servo;
+        import com.qualcomm.robotcore.util.ElapsedTime;
 
         import org.firstinspires.ftc.robotcore.external.Telemetry;
+        import org.firstinspires.ftc.robotcore.internal.AppUtil;
 
 /**
  * Created by Drew on 10/16/2016.
@@ -22,6 +24,8 @@ public class PushBotTeleOp extends OpMode {
     Servo btn_servo;
     Servo left_lift_servo;
     Servo right_lift_servo;
+    Servo ball_gate_servo;
+    Servo ball_loader;
     DeviceInterfaceModule CDI;
     double init_btn_servo_position = .45;
     double btn_servo_position;
@@ -36,13 +40,20 @@ public class PushBotTeleOp extends OpMode {
     double dpad_turn_speed = .16;
     double ServoPower;
     double LiftPower;
+    double open_position = .4;
+    double gate_closed_position = .9;
+    double loader_down_position = .1;
+    double loader_up_position = .63;
+    double SM_start_position;
     boolean SlowMode = false;
     boolean BlueOn;
     boolean RedOn;
     boolean Reverse = false;
-    double init_lift_servo_position = 0;
-    double lift_servo_position;
-    double lift_servo_degrees = 50;
+    boolean gate_open = false;
+    boolean loader_up = false;
+
+    private ElapsedTime gate_timer = new ElapsedTime();
+    private ElapsedTime loader_timer = new ElapsedTime();
 
     @Override
     public void init() {
@@ -54,12 +65,20 @@ public class PushBotTeleOp extends OpMode {
         btn_servo = hardwareMap.servo.get("button_servo");
         left_lift_servo = hardwareMap.servo.get("left_fork");
         right_lift_servo = hardwareMap.servo.get("right_fork");
+        ball_gate_servo = hardwareMap.servo.get("ball_gate");
+        ball_loader = hardwareMap.servo.get("ball_loader");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
 
         btn_servo.setPosition(init_btn_servo_position);
         right_lift_servo.setDirection(Servo.Direction.REVERSE);
 
         ServoPower = 0;
+
+        ball_loader.setPosition(loader_down_position);
+
+        ball_gate_servo.setPosition(gate_closed_position);
+
+        ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -125,7 +144,13 @@ public class PushBotTeleOp extends OpMode {
         }
 
         if(gamepad2.x){
+            SM_start_position = ShootMotor.getCurrentPosition();
             ShootMotor.setPower(1);
+        }
+
+        if (SM_start_position > 0 && ShootMotor.getCurrentPosition() > SM_start_position + 2640) {
+            ShootMotor.setPower(0);
+            SM_start_position = 0;
         }
 
         if (gamepad2.y){
@@ -186,14 +211,39 @@ public class PushBotTeleOp extends OpMode {
         right_lift_servo.setPosition(ServoPower);
         left_lift_servo.setPosition(ServoPower);
 
+        if (gamepad2.left_stick_y > .1) {
+            ball_loader.setPosition(loader_down_position);
+        }
+
         LiftPower = gamepad2.left_stick_y * LiftSpeed;
         LiftMotor.setPower(LiftPower / 2);
 
+        if (gamepad2.a) {
+            gate_timer.reset();
+            ball_gate_servo.setPosition(open_position);
+            gate_open = true;
+        }
+        if (gate_open && gate_timer.milliseconds() > 180) {
+            ball_gate_servo.setPosition(gate_closed_position);
+            gate_open = false;
+        }
+
+        if (gamepad2.b) {
+            loader_timer.reset();
+            ball_loader.setPosition(loader_up_position);
+            loader_up = true;
+        }
+        if (loader_up && loader_timer.milliseconds() > 700) {
+            ball_loader.setPosition(loader_down_position);
+            loader_up = false;
+        }
 
 
         //Changing light based on speed
         CDI.setLED(0, BlueOn);           //Blue light
         CDI.setLED(1, RedOn);           //Red light
+
+
     }
 
 

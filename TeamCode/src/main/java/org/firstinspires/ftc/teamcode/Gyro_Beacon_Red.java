@@ -1,5 +1,5 @@
 /*
-Gyro Beacon Autonomous Blue
+Gyro Beacon Autonomous Red
 by Drew Kinneer 1/25/2017
 Team 10435
 */
@@ -66,8 +66,8 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         ball_gate_servo = hardwareMap.servo.get("ball_gate");
         ShootMotor = hardwareMap.dcMotor.get("shoot_motor");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
-        CDI.setLED(0, true);           //Blue light On
-        CDI.setLED(1, false);           //Red light OFF
+        CDI.setLED(1, true);           //Red light On
+        CDI.setLED(0, false);          //Blue light OFF
 
         // Set up right beacon sensor
         ColorRight = hardwareMap.i2cDevice.get("cs_right");
@@ -112,55 +112,62 @@ public class Gyro_Beacon_Red extends LinearOpMode {
          */
 
         // get lined up
-        go_forward(3, 0, .5, false, false);
-        turn_to_heading(330);
+        go_forward(3, 0, .5, false, 0, false);
+        turn_to_heading(325);
 
         // go to first white line
-        go_forward(72, 330, 1, true, false);
+        go_forward(54, 325, 1, false, 0, false);
+        go_forward(12, 325, .3, true, 0, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
-            go_forward(14, 0, -.3, true, false);
+            go_forward(14, 0, -.3, true, 0, false);
         } else {
-            go_forward(6, 330, -.3, true, false);
+            //go_forward(2, 30, -.3, false, 0, false);
         }
         turn_to_heading(270);
-        go_forward(14, 270, .5, false, true);
+        go_forward(14, 270, .5, false, 0, true);
 
         // hit first beacon
         button_push("red");
 
         // back up, get lined up
-        go_forward(2, 270, -.5, false, false);
+        go_forward(2, 270, -.5, false, 0, false);
 
         turn_to_heading(263);
 
         // shoot balls
         Shoot();
-        sleep(2000);  // wait for next ball to roll in
+        sleep(1200);  // wait for next ball to roll in
         Shoot();
         //sleep(300);
         //ball_gate_servo.setPosition(1);
 
         // back up, get lined up
-        go_forward(5, 265, -1, false, false);
+        go_forward(5, 265, -1, false, 0, false);
         turn_to_heading(0);
-        go_forward(2, 0, .5, false, false);  // get off the white line
 
         // go to second white line
-        go_forward(51, 0, 1, true, false);
-        go_forward(8, 0, -.3, true, false);
+        go_forward(44, 0, 1, false, 0, false);
+        go_forward(8, 0, .5, true, 0, false);
+
+        if (!found_white) {
+            turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
+            go_forward(14, 15, -.3, true, 0, false);
+        } else {
+            //go_forward(4.5, 0, -.3, false, 0, false);
+        }
         turn_to_heading(270);
-        go_forward(14, 270, .5, false, true);
+        go_forward(14, 270, .5, false, 0, true);
 
         // hit second beacon
         button_push("red");
 
         // back up
-        go_forward(14, 270, -1, false, false);
+        go_forward(14, 270, -1, false, 0, false);
 
         // turn toward center
-        turn_to_heading(140);
-        go_forward(55, 140, 1, false, false);
+        turn_to_heading(145);
+        go_forward(55, 145, 1, false, 0, false);
 
         DbgLog.msg("10435 done");
 
@@ -171,7 +178,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2880);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2640);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();
@@ -209,7 +216,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         }
         while (degrees_to_turn > .5 && opModeIsActive()) {
 
-            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 50, 3) + 10) / 100;
+            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 10) / 100;
 
             if (go_right) {
                 wheel_power = -wheel_power;
@@ -276,7 +283,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
     } // end of go_straight_adjustment
 
 
-    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, boolean use_touch_sensor) {
+    private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, int inches_till_check, boolean use_touch_sensor) {
 
         DbgLog.msg("10435 starting go_forward");
 
@@ -288,10 +295,12 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         double speed_increase = .05;
         int start_position_L;
         int start_position_R;
+        int ticks_till_check;
         // Output of the go_straight_adjustment function
         double power_adjustment;
 
-        ticks_to_travel = inches_to_travel / 11.39 * 1440; // 11.39 is for matrix wheels which are 3.625 in diameter
+        ticks_to_travel = convert_inches_to_ticks(inches_to_travel);
+        ticks_till_check = convert_inches_to_ticks(inches_till_check);
 
         start_position_L = leftWheel.getCurrentPosition();
         start_position_R = rightWheel.getCurrentPosition();
@@ -315,7 +324,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
             rightWheel.setPower(current_speed + power_adjustment);
             leftWheel.setPower(current_speed - power_adjustment);
 
-            if (find_white) {
+            if (find_white && leftWheel.getCurrentPosition() > ticks_till_check) {
                 found_white = ODS.getLightDetected() > white_value;
             }
             if (use_touch_sensor) {
@@ -402,5 +411,13 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         DbgLog.msg("10435 ending button_push");
 
     }  // end of button_push
+
+
+    private int convert_inches_to_ticks(double inches) {
+        return (int) (inches / 11.39 * 1440);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
+    }  // end of convert_inches_to_ticks
+
 }
+
+
 
