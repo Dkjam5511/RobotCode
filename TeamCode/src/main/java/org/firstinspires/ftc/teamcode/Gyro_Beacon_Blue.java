@@ -131,7 +131,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         button_push("blue");
 
         // back up, get lined up
-        go_forward(7, 95, -.5, false, 0, false);
+        go_forward(7, 98, -.5, false, 0, false);
 
         // shoot balls
         Shoot();
@@ -141,7 +141,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         // go to second white line
         turn_to_heading(0);
         go_forward(39, 0, 1, false, 0, false);
-        go_forward(10, 0, .5, true, 0, false);
+        go_forward(10, 0, .25, true, 0, false);
 
         if (!found_white) {
             turn_to_heading(345);  // If we missed the line, try to change angle before backing up.
@@ -278,7 +278,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
     private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, int inches_till_check, boolean use_touch_sensor) {
 
-        DbgLog.msg("10435 starting go_forward");
+        DbgLog.msg("10435 starting go_forward inches:" + Double.toString(inches_to_travel) + " heading:" + Integer.toString(heading) + " speed:" + Double.toString(speed) + " find white:" + Boolean.toString(find_white) + " inches till check:" + Double.toString(inches_till_check) + " use touch sensor:" + Boolean.toString(use_touch_sensor));
 
         double current_speed = .05;
         double ticks_to_travel;
@@ -345,7 +345,11 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         //telemetry.update();
 
         sleep(100);
-        DbgLog.msg("10435 ending go_forward: opModeIsActive:" + Boolean.toString(opModeIsActive()) + " destination_reached:" + Boolean.toString(destination_reached)  + " found_white:" + Boolean.toString(found_white) + " touch_sensor_pressed:" + Boolean.toString(touch_sensor_pressed) );
+        DbgLog.msg("10435 ending go_forward: opModeIsActive:" + Boolean.toString(opModeIsActive())
+                + " distance traveled:" + Double.toString(convert_ticks_to_inches(leftWheel.getCurrentPosition() - start_position_L))
+                + " destination_reached:" + Boolean.toString(destination_reached)
+                + " found_white:" + Boolean.toString(found_white)
+                + " touch_sensor_pressed:" + Boolean.toString(touch_sensor_pressed));
 
     } // end of go_forward
 
@@ -410,6 +414,9 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         return (int) (inches / 11.39 * 1440);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
     }  // end of convert_inches_to_ticks
 
+    private double convert_ticks_to_inches(int ticks) {
+        return (double) (ticks / 1440 * 11.39);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
+    }  // end of convert_inches_to_ticks
 }
 
 
