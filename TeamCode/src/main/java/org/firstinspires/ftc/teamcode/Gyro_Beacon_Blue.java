@@ -160,7 +160,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         // turn toward center
         turn_to_heading(220);
-        go_forward(51, 220, 1, false, 0, false);
+        go_forward(49, 220, .7, false, 0, false);
 
         DbgLog.msg("10435 done");
 
@@ -171,7 +171,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2640);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2745);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();

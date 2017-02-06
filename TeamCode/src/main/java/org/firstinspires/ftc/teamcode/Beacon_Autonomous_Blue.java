@@ -21,7 +21,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODERS;
 
-@Autonomous(name = "Beacon_Autonomous_Blue", group = "Beacon")
 
 public class Beacon_Autonomous_Blue extends LinearOpMode {
 

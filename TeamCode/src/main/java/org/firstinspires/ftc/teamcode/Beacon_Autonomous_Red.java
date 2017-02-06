@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "Beacon_Autonomous_Red", group = "Beacon")
 
 public class Beacon_Autonomous_Red extends LinearOpMode {
 

@@ -149,8 +149,8 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         } else {
             //go_forward(4.5, 0, -.3, false, 0, false);
         }
-        turn_to_heading(265);
-        go_forward(14, 265, .5, false, 0, true);
+        turn_to_heading(270);
+        go_forward(14, 270, .5, false, 0, true);
 
         // hit second beacon
         button_push("red");
@@ -160,7 +160,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         // turn toward center
         turn_to_heading(140);
-        go_forward(51, 140, 1, false, 0, false);
+        go_forward(49, 140, .7, false, 0, false);
 
         DbgLog.msg("10435 done");
 
@@ -171,7 +171,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2640);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2745);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();
@@ -279,7 +279,6 @@ public class Gyro_Beacon_Red extends LinearOpMode {
     private void go_forward(double inches_to_travel, int heading, double speed, boolean find_white, int inches_till_check, boolean use_touch_sensor) {
 
         DbgLog.msg("10435 starting go_forward inches:" + Double.toString(inches_to_travel) + " heading:" + Integer.toString(heading) + " speed:" + Double.toString(speed) + " find white:" + Boolean.toString(find_white) + " inches till check:" + Double.toString(inches_till_check) + " use touch sensor:" + Boolean.toString(use_touch_sensor));
-
 
         double current_speed = .05;
         double ticks_to_travel;

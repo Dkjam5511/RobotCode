@@ -148,7 +148,7 @@ public class PushBotTeleOp extends OpMode {
             ShootMotor.setPower(1);
         }
 
-        if (SM_start_position > 0 && ShootMotor.getCurrentPosition() > SM_start_position + 2640) {
+        if (SM_start_position > 0 && ShootMotor.getCurrentPosition() > SM_start_position + 2745) {
             ShootMotor.setPower(0);
             SM_start_position = 0;
         }
