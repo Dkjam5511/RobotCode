@@ -21,6 +21,7 @@ public class PushBotTeleOp extends OpMode {
     DcMotor rightWheel;
     DcMotor LiftMotor;
     DcMotor ShootMotor;
+    DcMotor SweepMotor;
     Servo btn_servo;
     Servo left_lift_servo;
     Servo right_lift_servo;
@@ -42,8 +43,8 @@ public class PushBotTeleOp extends OpMode {
     double LiftPower;
     double open_position = .4;
     double gate_closed_position = .9;
-    double loader_down_position = .1;
-    double loader_up_position = .63;
+    double loader_down_position = .10;
+    double loader_up_position = 1;
     double SM_start_position;
     boolean SlowMode = false;
     boolean BlueOn;
@@ -51,6 +52,8 @@ public class PushBotTeleOp extends OpMode {
     boolean Reverse = false;
     boolean gate_open = false;
     boolean loader_up = false;
+    boolean sweeper_running = false;
+
 
     private ElapsedTime gate_timer = new ElapsedTime();
     private ElapsedTime loader_timer = new ElapsedTime();
@@ -62,6 +65,7 @@ public class PushBotTeleOp extends OpMode {
         rightWheel = hardwareMap.dcMotor.get("right_drive");
         LiftMotor = hardwareMap.dcMotor.get("lift_motor");
         ShootMotor = hardwareMap.dcMotor.get("shoot_motor");
+        SweepMotor = hardwareMap.dcMotor.get("sweep_motor");
         btn_servo = hardwareMap.servo.get("button_servo");
         left_lift_servo = hardwareMap.servo.get("left_fork");
         right_lift_servo = hardwareMap.servo.get("right_fork");
@@ -153,10 +157,6 @@ public class PushBotTeleOp extends OpMode {
             SM_start_position = 0;
         }
 
-        if (gamepad2.y){
-            ShootMotor.setPower(0);
-        }
-
         //Sending Those Wheel Powers to the Actual Wheels
         leftWheel.setPower(leftWheelPower);
         rightWheel.setPower(rightWheelPower);
@@ -211,9 +211,6 @@ public class PushBotTeleOp extends OpMode {
         right_lift_servo.setPosition(ServoPower);
         left_lift_servo.setPosition(ServoPower);
 
-        if (gamepad2.left_stick_y > .1) {
-            ball_loader.setPosition(loader_down_position);
-        }
 
         LiftPower = gamepad2.left_stick_y * LiftSpeed;
         LiftMotor.setPower(LiftPower / 2);
@@ -228,6 +225,31 @@ public class PushBotTeleOp extends OpMode {
             gate_open = false;
         }
 
+
+        if (gamepad1.start) {
+            SweepMotor.setPower(-1);
+            ball_loader.setPosition(loader_down_position);
+            loader_timer.reset();
+            sweeper_running = true;
+        }
+
+        if (sweeper_running && loader_timer.seconds() <= 0.6 && !loader_up) {
+            ball_loader.setPosition(loader_up_position);
+            loader_up = true;
+        } else if (sweeper_running && loader_timer.seconds() > 0.6 && loader_timer.seconds() < 2.1 && loader_up) {
+            ball_loader.setPosition(loader_down_position);
+            loader_up = false;
+        } else if (loader_timer.seconds() >= 2.1) {
+            loader_timer.reset();
+        }
+
+        if (gamepad1.x) {
+            sweeper_running = false;
+            SweepMotor.setPower(0);
+            ball_loader.setPosition(loader_down_position);
+        }
+
+        /*
         if (gamepad2.b) {
             loader_timer.reset();
             ball_loader.setPosition(loader_up_position);
@@ -237,8 +259,7 @@ public class PushBotTeleOp extends OpMode {
             ball_loader.setPosition(loader_down_position);
             loader_up = false;
         }
-
-
+        */
         //Changing light based on speed
         CDI.setLED(0, BlueOn);           //Blue light
         CDI.setLED(1, RedOn);           //Red light
