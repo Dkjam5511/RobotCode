@@ -53,6 +53,7 @@ public class PushBotTeleOp extends OpMode {
     boolean gate_open = false;
     boolean loader_up = false;
     boolean sweeper_running = false;
+    boolean shoot_motor_running = false;
 
 
     private ElapsedTime gate_timer = new ElapsedTime();
@@ -148,13 +149,13 @@ public class PushBotTeleOp extends OpMode {
         }
 
         if(gamepad2.x){
-            SM_start_position = ShootMotor.getCurrentPosition();
             ShootMotor.setPower(1);
+            shoot_motor_running = true;
         }
 
-        if (SM_start_position > 0 && ShootMotor.getCurrentPosition() > SM_start_position + 2745) {
+        if (shoot_motor_running && ShootMotor.getCurrentPosition() % 2880 > 2700) {
             ShootMotor.setPower(0);
-            SM_start_position = 0;
+            shoot_motor_running = false;
         }
 
         //Sending Those Wheel Powers to the Actual Wheels
@@ -248,6 +249,8 @@ public class PushBotTeleOp extends OpMode {
             SweepMotor.setPower(0);
             ball_loader.setPosition(loader_down_position);
         }
+
+        telemetry.addData("Shoot Motor Position", ShootMotor.getCurrentPosition());
 
         /*
         if (gamepad2.b) {

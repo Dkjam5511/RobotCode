@@ -171,11 +171,11 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2745);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2800);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();
-            while (opModeIsActive() && runtime.seconds() < 2 && ShootMotor.isBusy() ) {
+            while (opModeIsActive() && runtime.seconds() < 2 && ShootMotor.isBusy()) {
                 sleep(10);
                 if (runtime.seconds() > .4 && runtime.seconds() < .8) {
                     ball_gate_servo.setPosition(open_position);  // open the gate for another ball
@@ -284,7 +284,8 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         double ticks_to_travel;
         boolean touch_sensor_pressed = false;
         boolean destination_reached = false;
-        double white_value = .8;
+        double white_value = .7;
+        double white_level_read = 0;
         double speed_increase = .05;
         int start_position_L;
         int start_position_R;
@@ -318,10 +319,11 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
             leftWheel.setPower(current_speed - power_adjustment);
 
             if (find_white && leftWheel.getCurrentPosition() > ticks_till_check) {
-                found_white = ODS.getLightDetected() > white_value;
+                white_level_read = ODS.getLightDetected();
+                found_white = white_level_read > white_value;
             }
             if (use_touch_sensor){
-              touch_sensor_pressed = touchSensor.isPressed();
+                touch_sensor_pressed = touchSensor.isPressed();
             }
 
             if (speed >= 0) {
@@ -346,9 +348,10 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         sleep(100);
         DbgLog.msg("10435 ending go_forward: opModeIsActive:" + Boolean.toString(opModeIsActive())
-                + " distance traveled:" + Double.toString(convert_ticks_to_inches(leftWheel.getCurrentPosition() - start_position_L))
+                + " distance traveled L:" + Double.toString(convert_ticks_to_inches(leftWheel.getCurrentPosition() - start_position_L))
+                + " distance traveled R:" + Double.toString(convert_ticks_to_inches(rightWheel.getCurrentPosition() - start_position_R))
                 + " destination_reached:" + Boolean.toString(destination_reached)
-                + " found_white:" + Boolean.toString(found_white)
+                + " found_white:" + Boolean.toString(found_white) + " white_level:" + Double.toString(white_level_read)
                 + " touch_sensor_pressed:" + Boolean.toString(touch_sensor_pressed));
 
     } // end of go_forward
@@ -415,7 +418,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
     }  // end of convert_inches_to_ticks
 
     private double convert_ticks_to_inches(int ticks) {
-        return (double) (ticks / 1440 * 11.39);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
+        return (double) ((double) ticks / 1440 * 11.39);  // 11.39 is for matrix wheels which are 3.625 in diameter * Pi is 11.39
     }  // end of convert_inches_to_ticks
 }
 
