@@ -108,16 +108,18 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         waitForStart();
 
         /*
+         *******************************************************
          *****************  Main Control ***********************
+         *******************************************************
          */
 
         // get lined up
         go_forward(3, 0, .5, false, 0, false);
-        turn_to_heading(325);
+        turn_to_heading(328);
 
         // go to first white line
-        go_forward(54, 325, 1, false, 0, false);
-        go_forward(12, 325, .3, true, 0, false);
+        go_forward(54, 328, 1, false, 0, false);
+        go_forward(12, 328, .35, true, 0, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 0, -.3, true, 0, false);
@@ -131,7 +133,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         button_push("red");
 
         // back up, get lined up
-        go_forward(7, 270, -.5, false, 0, false);
+        go_forward(7, 275, -.5, false, 0, false);
 
         // shoot balls
         Shoot();
@@ -145,12 +147,12 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         if (!found_white) {
             turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
-            go_forward(14, 15, -.3, true, 0, false);
+            go_forward(14, 15, -.35, true, 0, false);
         } else {
             //go_forward(4.5, 0, -.3, false, 0, false);
         }
-        turn_to_heading(270);
-        go_forward(14, 270, .5, false, 0, true);
+        turn_to_heading(267);
+        go_forward(14, 267, .5, false, 0, true);
 
         // hit second beacon
         button_push("red");
@@ -171,7 +173,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2800);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2870);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();

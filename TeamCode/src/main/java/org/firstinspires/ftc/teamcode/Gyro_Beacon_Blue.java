@@ -108,7 +108,9 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
         waitForStart();
 
         /*
+         *******************************************************
          *****************  Main Control ***********************
+         *******************************************************
          */
 
         // get lined up
@@ -171,7 +173,7 @@ public class Gyro_Beacon_Blue extends LinearOpMode {
 
         if (opModeIsActive()) {
             double open_position = 0;
-            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2800);
+            ShootMotor.setTargetPosition(ShootMotor.getCurrentPosition() + 2870);
             ShootMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ShootMotor.setPower(1);
             runtime.reset();

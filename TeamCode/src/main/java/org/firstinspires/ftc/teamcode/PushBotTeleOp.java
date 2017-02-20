@@ -29,7 +29,6 @@ public class PushBotTeleOp extends OpMode {
     Servo ball_loader;
     DeviceInterfaceModule CDI;
     double init_btn_servo_position = .45;
-    double btn_servo_position;
     double btn_servo_degrees = .2;
     double leftWheelPower = 0;
     double rightWheelPower = 0;
@@ -37,6 +36,7 @@ public class PushBotTeleOp extends OpMode {
     double LiftSpeed = 1;
     double LeftSpeedInput;
     double RightSpeedInput;
+    double xSpeedAdjustment;
     double dpad_speed = .143;
     double dpad_turn_speed = .16;
     double ServoPower;
@@ -47,6 +47,7 @@ public class PushBotTeleOp extends OpMode {
     double loader_up_position = 1;
     double SM_start_position;
     boolean SlowMode = false;
+    boolean joystick_driving = true;
     boolean BlueOn;
     boolean RedOn;
     boolean Reverse = false;
@@ -58,6 +59,7 @@ public class PushBotTeleOp extends OpMode {
 
     private ElapsedTime gate_timer = new ElapsedTime();
     private ElapsedTime loader_timer = new ElapsedTime();
+    private ElapsedTime back_pressed_timer = new ElapsedTime();
 
     @Override
     public void init() {
@@ -84,6 +86,8 @@ public class PushBotTeleOp extends OpMode {
         ball_gate_servo.setPosition(gate_closed_position);
 
         ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        back_pressed_timer.reset();
     }
 
     @Override
@@ -94,6 +98,13 @@ public class PushBotTeleOp extends OpMode {
 
     @Override
     public void loop() {
+
+        if (gamepad1.back && back_pressed_timer.seconds() > 0.3) {
+            joystick_driving = !joystick_driving;
+            back_pressed_timer.reset();
+            telemetry.addData("Joystick Driving", joystick_driving);
+            telemetry.update();
+        }
 
         if (gamepad1.left_bumper) {
             SlowMode = false;
@@ -119,8 +130,37 @@ public class PushBotTeleOp extends OpMode {
             Reverse = false;
         }
 
-        LeftSpeedInput = gamepad1.left_stick_y * Speed;
-        RightSpeedInput = gamepad1.right_stick_y * Speed;
+        if (joystick_driving) {
+            LeftSpeedInput = gamepad1.right_stick_y * Speed;
+            RightSpeedInput = LeftSpeedInput;
+            xSpeedAdjustment = gamepad1.right_stick_x * Speed;
+            if (LeftSpeedInput > .2) {
+                xSpeedAdjustment = -xSpeedAdjustment;
+            }
+            LeftSpeedInput = LeftSpeedInput - xSpeedAdjustment;
+            RightSpeedInput = RightSpeedInput + xSpeedAdjustment;
+            xSpeedAdjustment = 1;  // now use xSpeedAdjustment as a percentage to cap speed at 1.
+            if (Math.abs(LeftSpeedInput) > 1) {
+                xSpeedAdjustment = 1 / Math.abs(LeftSpeedInput);
+            } else if (Math.abs(RightSpeedInput) > 1) {
+                xSpeedAdjustment = 1 / Math.abs(RightSpeedInput);
+            }
+            LeftSpeedInput = LeftSpeedInput * xSpeedAdjustment;
+            RightSpeedInput = RightSpeedInput * xSpeedAdjustment;
+        } else {
+            LeftSpeedInput = gamepad1.left_stick_y * Speed;
+            RightSpeedInput = gamepad1.right_stick_y * Speed;
+        }
+/*
+        telemetry.addData("LeftSpeed", LeftSpeedInput);
+        telemetry.addData("RightSpeed", RightSpeedInput);
+        telemetry.addLine("<================>");
+        telemetry.addData("Joystick Y", gamepad1.right_stick_y);
+        telemetry.addData("Joystick X", gamepad1.right_stick_x);
+        telemetry.addLine("<================>");
+        telemetry.addData("Joystick Driving", joystick_driving);
+        telemetry.update();
+*/
 
         if(gamepad1.dpad_up){
             LeftSpeedInput = -dpad_speed;
@@ -162,40 +202,15 @@ public class PushBotTeleOp extends OpMode {
         leftWheel.setPower(leftWheelPower);
         rightWheel.setPower(rightWheelPower);
 
-       /* if (gamepad1.right_trigger == 1){
-            btn_servo_position = init_btn_servo_position - btn_servo_degrees;
-            btn_servo.setPosition(btn_servo_position);
-        }
-        else if (gamepad1.right_trigger == 0){
-            btn_servo_position = init_btn_servo_position;
-            btn_servo.setPosition(btn_servo_position);
-        }
-
-        if (gamepad1.left_trigger == 1){
-            btn_servo_position = init_btn_servo_position + btn_servo_degrees;
-            btn_servo.setPosition(btn_servo_position);
-        }
-        else if (gamepad1.left_trigger == 0){
-            btn_servo_position = init_btn_servo_position;
-            btn_servo.setPosition(btn_servo_position);
-        }
-        */
-
-            //Setting the btn_servo position to the triggers
-
+        //Setting the btn_servo position to the triggers and Y to reset
         if (gamepad1.right_trigger == 1) {
-            btn_servo_position = init_btn_servo_position - btn_servo_degrees;
-            btn_servo.setPosition(btn_servo_position);
+            btn_servo.setPosition(init_btn_servo_position - btn_servo_degrees);
         }
-
         if (gamepad1.left_trigger == 1) {
-            btn_servo_position = init_btn_servo_position + btn_servo_degrees;
-            btn_servo.setPosition(btn_servo_position);
+            btn_servo.setPosition(init_btn_servo_position + btn_servo_degrees);
         }
-
         if (gamepad1.y) {
-            btn_servo_position = init_btn_servo_position;
-            btn_servo.setPosition(btn_servo_position);
+            btn_servo.setPosition(init_btn_servo_position);
         }
 
 
@@ -250,7 +265,7 @@ public class PushBotTeleOp extends OpMode {
             ball_loader.setPosition(loader_down_position);
         }
 
-        telemetry.addData("Shoot Motor Position", ShootMotor.getCurrentPosition());
+
 
         /*
         if (gamepad2.b) {
