@@ -131,10 +131,14 @@ public class PushBotTeleOp extends OpMode {
         }
 
         if (joystick_driving) {
-            LeftSpeedInput = gamepad1.right_stick_y * Speed;
-            RightSpeedInput = LeftSpeedInput;
-            xSpeedAdjustment = gamepad1.right_stick_x * Speed;
-            if (LeftSpeedInput > .2) {
+            LeftSpeedInput = gamepad1.left_stick_y * Speed;
+            xSpeedAdjustment = gamepad1.left_stick_x * Speed;
+            if (LeftSpeedInput == 0 && xSpeedAdjustment == 0) {
+                LeftSpeedInput = gamepad1.right_stick_y * Speed; // if left stick isn't used, try right stick
+                xSpeedAdjustment = gamepad1.right_stick_x * Speed;
+            }
+            RightSpeedInput = LeftSpeedInput;  // set right and left wheel to same
+            if (LeftSpeedInput > .2) {  // this is so spinning doesn't switch to backing up and turning (which is the opposite direction of x) until joystick is pulled back past .2
                 xSpeedAdjustment = -xSpeedAdjustment;
             }
             LeftSpeedInput = LeftSpeedInput - xSpeedAdjustment;
