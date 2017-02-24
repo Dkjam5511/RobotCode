@@ -132,13 +132,16 @@ public class Gyro_Beacon_Red extends LinearOpMode {
         // hit first beacon
         button_push("red");
 
-        // back up, get lined up
-        go_forward(7, 275, -.5, false, 0, false);
+        // back up, line up
+        go_forward(16, 275, .7, false, 0, false);
 
         // shoot balls
         Shoot();
         sleep(1200);  // wait for next ball to roll in
         Shoot();
+
+        // goo forawrd, get lined up
+        go_forward(9, 275, .5, false, 0, false);
 
         // go to second white line
         turn_to_heading(0);
@@ -162,7 +165,7 @@ public class Gyro_Beacon_Red extends LinearOpMode {
 
         // turn toward center
         turn_to_heading(140);
-        go_forward(49, 140, .7, false, 0, false);
+        go_forward(49, 140, 1, false, 0, false);
 
         DbgLog.msg("10435 done");
 

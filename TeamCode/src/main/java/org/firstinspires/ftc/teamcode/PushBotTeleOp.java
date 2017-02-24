@@ -247,7 +247,7 @@ public class PushBotTeleOp extends OpMode {
 
 
         if (gamepad1.start) {
-            SweepMotor.setPower(-1);
+            SweepMotor.setPower(1);
             ball_loader.setPosition(loader_down_position);
             loader_timer.reset();
             sweeper_running = true;
