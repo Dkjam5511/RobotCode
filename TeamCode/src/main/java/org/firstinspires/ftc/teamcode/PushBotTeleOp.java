@@ -55,11 +55,13 @@ public class PushBotTeleOp extends OpMode {
     boolean loader_up = false;
     boolean sweeper_running = false;
     boolean shoot_motor_running = false;
+    boolean start_pressed = false;
 
 
     private ElapsedTime gate_timer = new ElapsedTime();
     private ElapsedTime loader_timer = new ElapsedTime();
     private ElapsedTime back_pressed_timer = new ElapsedTime();
+    private ElapsedTime start_pressed_timer = new ElapsedTime();
 
     @Override
     public void init() {
@@ -88,6 +90,8 @@ public class PushBotTeleOp extends OpMode {
         ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         back_pressed_timer.reset();
+
+        start_pressed_timer.reset();
     }
 
     @Override
@@ -240,14 +244,14 @@ public class PushBotTeleOp extends OpMode {
             ball_gate_servo.setPosition(open_position);
             gate_open = true;
         }
-        if (gate_open && gate_timer.milliseconds() > 180) {
+        if (gate_open && gate_timer.milliseconds() > 140) {
             ball_gate_servo.setPosition(gate_closed_position);
             gate_open = false;
         }
 
 
         if (gamepad1.start) {
-            SweepMotor.setPower(1);
+            SweepMotor.setPower(-1);
             ball_loader.setPosition(loader_down_position);
             loader_timer.reset();
             sweeper_running = true;
@@ -269,7 +273,17 @@ public class PushBotTeleOp extends OpMode {
             ball_loader.setPosition(loader_down_position);
         }
 
+        if (gamepad2.start && !start_pressed && start_pressed_timer.seconds() > .25) {
+            SweepMotor.setPower(-1);
+            start_pressed = true;
+            start_pressed_timer.reset();
+        }
 
+        if (gamepad2.start && start_pressed && start_pressed_timer.seconds() > .25) {
+            SweepMotor.setPower(1);
+            start_pressed = false;
+            start_pressed_timer.reset();
+        }
 
         /*
         if (gamepad2.b) {
