@@ -27,6 +27,7 @@ public class PushBotTeleOp extends OpMode {
     Servo right_lift_servo;
     Servo ball_gate_servo;
     Servo ball_loader;
+    Servo fork_leveler;
     DeviceInterfaceModule CDI;
     double init_btn_servo_position = .45;
     double btn_servo_degrees = .2;
@@ -76,6 +77,7 @@ public class PushBotTeleOp extends OpMode {
         right_lift_servo = hardwareMap.servo.get("right_fork");
         ball_gate_servo = hardwareMap.servo.get("ball_gate");
         ball_loader = hardwareMap.servo.get("ball_loader");
+        fork_leveler = hardwareMap.servo.get("fork_leveler");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
 
         btn_servo.setPosition(init_btn_servo_position);
@@ -283,6 +285,14 @@ public class PushBotTeleOp extends OpMode {
             SweepMotor.setPower(1);
             start_pressed = false;
             start_pressed_timer.reset();
+        }
+
+        if (gamepad2.dpad_up) {
+            fork_leveler.setPosition(255);
+        }
+
+        if (gamepad2.dpad_down) {
+            fork_leveler.setPosition(0);
         }
 
         /*
