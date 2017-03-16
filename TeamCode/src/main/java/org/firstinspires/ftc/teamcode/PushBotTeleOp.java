@@ -23,8 +23,8 @@ public class PushBotTeleOp extends OpMode {
     DcMotor ShootMotor;
     DcMotor SweepMotor;
     Servo btn_servo;
-    Servo left_lift_servo;
-    Servo right_lift_servo;
+    Servo left_fork_servo;
+    Servo right_fork_servo;
     Servo ball_gate_servo;
     Servo ball_loader;
     Servo fork_leveler;
@@ -40,13 +40,16 @@ public class PushBotTeleOp extends OpMode {
     double xSpeedAdjustment;
     double dpad_speed = .143;
     double dpad_turn_speed = .16;
-    double ServoPower;
+    double fork_servo_power;
+    double previous_fork_servo_power = .51;
     double LiftPower;
     double open_position = .4;
     double gate_closed_position = .9;
     double loader_down_position = .10;
     double loader_up_position = 1;
     double SM_start_position;
+    double leveler_power;
+    double previous_leveler_power = 0.5;
     boolean SlowMode = false;
     boolean joystick_driving = true;
     boolean BlueOn;
@@ -73,21 +76,24 @@ public class PushBotTeleOp extends OpMode {
         ShootMotor = hardwareMap.dcMotor.get("shoot_motor");
         SweepMotor = hardwareMap.dcMotor.get("sweep_motor");
         btn_servo = hardwareMap.servo.get("button_servo");
-        left_lift_servo = hardwareMap.servo.get("left_fork");
-        right_lift_servo = hardwareMap.servo.get("right_fork");
+        left_fork_servo = hardwareMap.servo.get("left_fork");
+        right_fork_servo = hardwareMap.servo.get("right_fork");
         ball_gate_servo = hardwareMap.servo.get("ball_gate");
         ball_loader = hardwareMap.servo.get("ball_loader");
         fork_leveler = hardwareMap.servo.get("fork_leveler");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
 
         btn_servo.setPosition(init_btn_servo_position);
-        right_lift_servo.setDirection(Servo.Direction.REVERSE);
+        right_fork_servo.setDirection(Servo.Direction.REVERSE);
 
-        ServoPower = 0;
+        right_fork_servo.setPosition(previous_fork_servo_power + .01);
+        left_fork_servo.setPosition(previous_fork_servo_power + .02);
 
         ball_loader.setPosition(loader_down_position);
 
         ball_gate_servo.setPosition(gate_closed_position);
+
+        fork_leveler.setPosition(previous_leveler_power + .055);
 
         ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -203,6 +209,8 @@ public class PushBotTeleOp extends OpMode {
             shoot_motor_running = true;
         }
 
+        // mod 2880 is the amount of ticks past the start point.  Shooter doesn't stop until it's all the way around (or at least to 2700)
+        // This depends on the person making sure the shoot motor is at the start position before init
         if (shoot_motor_running && ShootMotor.getCurrentPosition() % 2880 > 2700) {
             ShootMotor.setPower(0);
             shoot_motor_running = false;
@@ -224,22 +232,26 @@ public class PushBotTeleOp extends OpMode {
         }
 
 
+
+        // gamepad stick give us -1 to 1.  divide by 2 and add .5 to make it between 0 and 1 for 360 servos
+        // .5 is the middle which makes servos supposed to be stopped
+        fork_servo_power = gamepad2.right_stick_y / 2 + .5;
+        if (fork_servo_power != previous_fork_servo_power) {
+            right_fork_servo.setPosition(fork_servo_power + .01);
+            left_fork_servo.setPosition(fork_servo_power + .02);  // the .01 and .02 are adjustments because our servos don't work right and aren't stopped unless at .51 and .52
+            previous_fork_servo_power = fork_servo_power;
+        }
+
         if (gamepad2.right_bumper){
-            LiftSpeed = .5;
+            LiftSpeed = .3;  // slow mode for lift
         }
 
         if (gamepad2.left_bumper){
             LiftSpeed = 1;
         }
 
-
-        ServoPower = gamepad2.right_stick_y / 2 + .5;
-        right_lift_servo.setPosition(ServoPower);
-        left_lift_servo.setPosition(ServoPower);
-
-
         LiftPower = gamepad2.left_stick_y * LiftSpeed;
-        LiftMotor.setPower(LiftPower / 2);
+        LiftMotor.setPower(LiftPower);
 
         if (gamepad2.a) {
             gate_timer.reset();
@@ -250,8 +262,7 @@ public class PushBotTeleOp extends OpMode {
             ball_gate_servo.setPosition(gate_closed_position);
             gate_open = false;
         }
-
-
+        
         if (gamepad1.start) {
             SweepMotor.setPower(-1);
             ball_loader.setPosition(loader_down_position);
@@ -288,12 +299,18 @@ public class PushBotTeleOp extends OpMode {
         }
 
         if (gamepad2.dpad_up) {
-            fork_leveler.setPosition(255);
+            leveler_power = 1;
+        }else if (gamepad2.dpad_down) {
+            leveler_power = 0;
+        } else{
+            leveler_power = 0.555;
         }
 
-        if (gamepad2.dpad_down) {
-            fork_leveler.setPosition(0);
+        if (previous_leveler_power != leveler_power){
+            fork_leveler.setPosition(leveler_power);
+            previous_leveler_power = leveler_power;
         }
+
 
         /*
         if (gamepad2.b) {
