@@ -31,7 +31,6 @@ abstract class Gyro_Beacon extends LinearOpMode {
     private I2cDeviceSynch ColorRightreader;  // right beacon sensor
     private I2cDeviceSynch ColorLeftreader;   // left beacon sensor
     private Servo btn_servo;
-    private Servo fork_leveler;
     private OpticalDistanceSensor ODS;
     private TouchSensor touchSensor;
     private ModernRoboticsI2cGyro gyro;
@@ -48,6 +47,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
     private double gate_closed_position = .9;
 
     void init_beacon (){
+        Servo fork_leveler;
         I2cDevice ColorRight;
         I2cDevice ColorLeft;
         int Passive = 1;

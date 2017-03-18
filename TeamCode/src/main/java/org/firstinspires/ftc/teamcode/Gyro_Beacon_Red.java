@@ -7,54 +7,12 @@ Team 10435
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "Gyro_Beacon_Red", group = "Beacon")
 
 public class Gyro_Beacon_Red extends Gyro_Beacon {
 
-    //hardware
-    Servo ball_gate_servo;
-    DcMotor ShootMotor;
-    DcMotor leftWheel;
-    DcMotor rightWheel;
-    I2cDevice ColorRight;
-    I2cDeviceSynch ColorRightreader;  // right beacon sensor
-    I2cDevice ColorLeft;
-    I2cDeviceSynch ColorLeftreader;   // left beacon sensor
-    DeviceInterfaceModule CDI;
-    Servo btn_servo;
-    OpticalDistanceSensor ODS;
-    TouchSensor touchSensor;
-    ModernRoboticsI2cGyro gyro;
-
-    private ElapsedTime runtime = new ElapsedTime();
-
-    // Output of the go_straight function
-    boolean found_white = false;
-
-    //Btn_Servo Variables
-    double init_btn_servo_position = .45;
-    double btn_servo_position;
-    double btn_servo_degrees = .4;
-
-    //Other
-    int Passive = 1;
-    double gate_closed_position = .9;
-
-    @Override
     public void runOpMode() throws InterruptedException {
 
         init_beacon();
