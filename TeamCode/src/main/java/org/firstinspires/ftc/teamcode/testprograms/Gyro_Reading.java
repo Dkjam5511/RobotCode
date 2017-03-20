@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testprograms;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 /**
  * Created by Drew on 1/24/2017.
  */
-@TeleOp(name = "Gyro Reading", group = "Tests and Calibration")
+@TeleOp(name = "Gyro Calibration", group = "Tests and Calibration")
 public class Gyro_Reading extends OpMode {
 
     ModernRoboticsI2cGyro gyro;

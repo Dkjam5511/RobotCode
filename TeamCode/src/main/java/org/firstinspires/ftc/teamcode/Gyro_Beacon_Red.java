@@ -15,11 +15,10 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
 
     public void runOpMode() throws InterruptedException {
 
-        init_beacon();
+        init_gyro_beacon();
 
         CDI.setLED(1, true);           //Red light On
         CDI.setLED(0, false);          //Blue light OFF
-
 
         waitForStart();
 
@@ -39,9 +38,8 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 0, -.3, true, 0, false);
-        } else {
-            //go_forward(2, 30, -.3, false, 0, false);
         }
+
         turn_to_heading(270);
         go_forward(14, 270, .5, false, 0, true);
 
@@ -67,9 +65,8 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
         if (!found_white) {
             turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 15, -.35, true, 0, false);
-        } else {
-            //go_forward(4.5, 0, -.3, false, 0, false);
         }
+
         turn_to_heading(315);
         turn_to_heading(273);
         go_forward(14, 270, .5, false, 0, true);
