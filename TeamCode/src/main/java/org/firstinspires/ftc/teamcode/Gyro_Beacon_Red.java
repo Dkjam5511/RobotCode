@@ -33,8 +33,7 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
         turn_to_heading(328);
 
         // go to first white line
-        go_forward(54, 328, 1, false, 0, false);
-        go_forward(12, 328, .35, true, 0, false);
+        go_forward(60, 328, 1, true, 54, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 0, -.3, true, 0, false);
@@ -59,8 +58,7 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
 
         // go to second white line
         turn_to_heading(0);
-        go_forward(39, 0, 1, false, 0, false);
-        go_forward(10, 0, .2, true, 0, false);
+        go_forward(54, 0, 1, true, 39, false);
 
         if (!found_white) {
             turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
@@ -75,7 +73,7 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
         button_push("red");
 
         // back up
-        go_forward(14, 270, -1, false, 0, false);
+        go_forward(12, 270, -1, false, 0, false);
 
         // turn toward center
         turn_to_heading(140);

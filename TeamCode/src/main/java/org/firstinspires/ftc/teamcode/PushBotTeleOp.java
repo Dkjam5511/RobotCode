@@ -38,6 +38,10 @@ public class PushBotTeleOp extends OpMode {
     double LeftSpeedInput;
     double RightSpeedInput;
     double xSpeedAdjustment;
+    double RightStick_x;
+    double LeftStick_y;
+    double LeftStick_x;
+    double ReductionFactor;
     double dpad_speed = .143;
     double dpad_turn_speed = .16;
     double fork_servo_power;
@@ -143,6 +147,34 @@ public class PushBotTeleOp extends OpMode {
         }
 
         if (joystick_driving) {
+            LeftStick_y = gamepad1.left_stick_y * Speed;
+            LeftStick_x = gamepad1.left_stick_x * Speed;
+            RightStick_x = gamepad1.right_stick_x * Speed;
+            if (Math.abs(LeftStick_y) < .2 && Math.abs(LeftStick_x) > .2) {  //  Now we're in spinning mode
+                LeftSpeedInput = -LeftStick_x;
+                RightSpeedInput = LeftStick_x;
+            } else {
+                if (LeftStick_y > 0) {
+                    RightStick_x = -RightStick_x;
+                }
+                LeftSpeedInput = LeftStick_y - (RightStick_x / 2.02);
+                RightSpeedInput = LeftStick_y + (RightStick_x / 2.02);
+                ReductionFactor = Math.max(Math.abs(LeftSpeedInput), Math.abs(RightSpeedInput)) - 1;
+                if (ReductionFactor > 0) {
+                    if (LeftStick_y < 0) {
+                        ReductionFactor = -ReductionFactor;
+                    }
+                    LeftSpeedInput = LeftSpeedInput - ReductionFactor;
+                    RightSpeedInput = RightSpeedInput - ReductionFactor;
+                }
+            }
+        } else {
+            LeftSpeedInput = gamepad1.left_stick_y * Speed;
+            RightSpeedInput = gamepad1.right_stick_y * Speed;
+        }
+
+        /*
+        if (joystick_driving) {
             LeftSpeedInput = gamepad1.left_stick_y * Speed;
             xSpeedAdjustment = gamepad1.left_stick_x * Speed;
             if (LeftSpeedInput == 0 && xSpeedAdjustment == 0) {
@@ -167,7 +199,8 @@ public class PushBotTeleOp extends OpMode {
             LeftSpeedInput = gamepad1.left_stick_y * Speed;
             RightSpeedInput = gamepad1.right_stick_y * Speed;
         }
-/*
+        */
+
         telemetry.addData("LeftSpeed", LeftSpeedInput);
         telemetry.addData("RightSpeed", RightSpeedInput);
         telemetry.addLine("<================>");
@@ -176,7 +209,7 @@ public class PushBotTeleOp extends OpMode {
         telemetry.addLine("<================>");
         telemetry.addData("Joystick Driving", joystick_driving);
         telemetry.update();
-*/
+
 
         if(gamepad1.dpad_up){
             LeftSpeedInput = -dpad_speed;

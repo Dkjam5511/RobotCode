@@ -369,8 +369,9 @@ abstract class Gyro_Beacon extends LinearOpMode {
                 btn_servo_position = init_btn_servo_position + btn_servo_degrees;
                 btn_servo.setPosition(btn_servo_position);
             }
-            sleep(1000);
+            sleep(500);
             btn_servo.setPosition(init_btn_servo_position);
+            sleep(500);
             tries_count = tries_count + 1;
 
             //Read color sensosrs
