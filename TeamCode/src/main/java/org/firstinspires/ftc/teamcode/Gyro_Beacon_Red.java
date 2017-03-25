@@ -33,7 +33,7 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
         turn_to_heading(328);
 
         // go to first white line
-        go_forward(60, 328, 1, true, 54, false);
+        go_forward(70, 328, 1, true, 54, false);
         if (!found_white) {
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(14, 0, -.3, true, 0, false);
@@ -50,15 +50,15 @@ public class Gyro_Beacon_Red extends Gyro_Beacon {
 
         // shoot balls
         Shoot();
-        sleep(1200);  // wait for next ball to roll in
+        sleep(900);  // wait for next ball to roll in
         Shoot();
 
-        // goo forawrd, get lined up
+        // go forawrd, get lined up
         go_forward(3, 275, .5, false, 0, false);
 
         // go to second white line
-        turn_to_heading(0);
-        go_forward(54, 0, 1, true, 39, false);
+        turn_to_heading(357);
+        go_forward(54, 357, 1, true, 39, false);
 
         if (!found_white) {
             turn_to_heading(15);  // If we missed the line, try to change angle before backing up.

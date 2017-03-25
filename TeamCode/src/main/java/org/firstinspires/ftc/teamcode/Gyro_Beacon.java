@@ -40,6 +40,11 @@ abstract class Gyro_Beacon extends LinearOpMode {
     // Output of the go_straight function
     boolean found_white = false;
 
+    double gs_previous_speed;
+    double gs_previous_ticks_traveled;
+    boolean gs_first_run = true;
+    ElapsedTime gs_speed_timer = new ElapsedTime();
+
     //Btn_Servo Variables
     private double init_btn_servo_position = .45;
 
@@ -49,7 +54,10 @@ abstract class Gyro_Beacon extends LinearOpMode {
     private double wheel_diameter = 3.62;  // size of Matrix wheels
     public double ticks_per_inch = wheel_encoder_ticks / (wheel_diameter * 3.1416);
 
+
     void init_gyro_beacon() {
+        Servo right_fork_servo;
+        Servo left_fork_servo;
         Servo fork_leveler;
         I2cDevice ColorRight;
         I2cDevice ColorLeft;
@@ -64,6 +72,8 @@ abstract class Gyro_Beacon extends LinearOpMode {
         ShootMotor = hardwareMap.dcMotor.get("shoot_motor");
         fork_leveler = hardwareMap.servo.get("fork_leveler");
         CDI = hardwareMap.deviceInterfaceModule.get("Device Interface Module 1");
+        left_fork_servo = hardwareMap.servo.get("left_fork");
+        right_fork_servo = hardwareMap.servo.get("right_fork");
 
 
         // Set up right beacon sensor
@@ -82,7 +92,9 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         leftWheel.setDirection(DcMotor.Direction.REVERSE);
 
-        fork_leveler.setPosition(.555);
+        fork_leveler.setPosition(.54);
+        right_fork_servo.setPosition(.5);
+        left_fork_servo.setPosition(.49);
 
         leftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -148,7 +160,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
         }
         while (degrees_to_turn > .5 && opModeIsActive()) {
 
-            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 10) / 100;
+            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 7) / 100;
 
             if (go_right) {
                 wheel_power = -wheel_power;
@@ -175,12 +187,34 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         leftWheel.setPower(0);
         rightWheel.setPower(0);
-        sleep(100);
+        sleep(300);
 
-        DbgLog.msg("10435 ending turn_to_heading");
+        DbgLog.msg("10435 ending turn_to_heading " + Double.toString(target_heading) + "  Attempted heading:" + Double.toString(current_heading) + "  Real current Heading:" + Double.toString(gyro.getHeading()));
 
     } // end of turn_to_heading
 
+
+    private double getSpeed(double ticks_traveled) {
+        double new_speed;
+
+        if (gs_first_run) {
+            gs_previous_ticks_traveled = ticks_traveled;
+            gs_speed_timer.reset();
+            gs_previous_speed = 1;
+            gs_first_run = false;
+        }
+
+        if (gs_speed_timer.seconds() >= .1) {
+            new_speed = (ticks_traveled - gs_previous_ticks_traveled) / 80;  // At max speed we travel about 4000 ticks in a second so this give a range of 0 - 5 for speed
+            gs_speed_timer.reset();
+            gs_previous_speed = new_speed;
+            gs_previous_ticks_traveled = ticks_traveled;
+        } else {
+            new_speed = gs_previous_speed;
+        }
+
+        return new_speed;
+    }
 
     private double go_straight_adjustment(int target_heading) {
 
@@ -230,14 +264,15 @@ abstract class Gyro_Beacon extends LinearOpMode {
         double white_value = .7;
         double white_level_read = 0;
         double speed_increase = .05;
+        double actual_speed;
         int start_position_L;
         int start_position_R;
-        //int previous_ticks_traveled_L = 0;
+        int previous_ticks_traveled_L = 0;
         int ticks_traveled_L;
         int ticks_traveled_R;
         int lowest_ticks_traveled;
         double remaining_inches;
-        //double previous_log_timer = 0;
+        double previous_log_timer = 0;
         double power_adjustment;
 
         if (speed < 0) {
@@ -259,6 +294,8 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         telemetry.addData("go_forward ticks_to_travel", ticks_to_travel);
 
+        gs_first_run = true;
+
         while (opModeIsActive() && !destination_reached && !found_white && !touch_sensor_pressed) {
 
             current_speed = current_speed + speed_increase;  // this is to slowly ramp up the speed so we don't slip
@@ -277,15 +314,15 @@ abstract class Gyro_Beacon extends LinearOpMode {
                 lowest_ticks_traveled = ticks_traveled_R;
             }
 
-            /*
+            actual_speed = getSpeed(lowest_ticks_traveled);
+
             if (ticks_traveled_L != previous_ticks_traveled_L && log_timer.seconds() - previous_log_timer > .1) {
                 DbgLog.msg("10435 go_forward ticks_traveled: L:" + Double.toString(ticks_traveled_L)
-                        + " R:" + Double.toString(ticks_traveled_R));
-
+                        + " R:" + Double.toString(ticks_traveled_R) + " actual_speed:" + Double.toString(actual_speed));
                 previous_log_timer = log_timer.seconds();
                 previous_ticks_traveled_L = ticks_traveled_L;
             }
-            */
+
 
             destination_reached = (lowest_ticks_traveled >= ticks_to_travel);
 
@@ -300,7 +337,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
             remaining_inches = inches_to_travel - ((double) lowest_ticks_traveled / ticks_per_inch);
 
-            if (remaining_inches <= (10 * Math.abs(speed)) && Math.abs(speed) > .2) {
+            if (remaining_inches <= actual_speed && Math.abs(speed) > .2) {
                 speed = .2;
                 if (going_backwards) {
                     speed = -speed;
@@ -452,6 +489,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
         }
         return push;
     }
+
 
 }
 

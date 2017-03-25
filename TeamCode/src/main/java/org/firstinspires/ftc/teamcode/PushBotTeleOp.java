@@ -42,8 +42,8 @@ public class PushBotTeleOp extends OpMode {
     double LeftStick_y;
     double LeftStick_x;
     double ReductionFactor;
-    double dpad_speed = .143;
-    double dpad_turn_speed = .16;
+    double dpad_speed = .16;
+    double dpad_turn_speed = .18;
     double fork_servo_power;
     double previous_fork_servo_power = .51;
     double LiftPower;
@@ -90,14 +90,14 @@ public class PushBotTeleOp extends OpMode {
         btn_servo.setPosition(init_btn_servo_position);
         right_fork_servo.setDirection(Servo.Direction.REVERSE);
 
-        right_fork_servo.setPosition(previous_fork_servo_power + .01);
-        left_fork_servo.setPosition(previous_fork_servo_power + .02);
+        right_fork_servo.setPosition(.5);
+        left_fork_servo.setPosition(.49);
 
         ball_loader.setPosition(loader_down_position);
 
         ball_gate_servo.setPosition(gate_closed_position);
 
-        fork_leveler.setPosition(previous_leveler_power + .055);
+        fork_leveler.setPosition(previous_leveler_power + .04);
 
         ShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -270,8 +270,8 @@ public class PushBotTeleOp extends OpMode {
         // .5 is the middle which makes servos supposed to be stopped
         fork_servo_power = gamepad2.right_stick_y / 2 + .5;
         if (fork_servo_power != previous_fork_servo_power) {
-            right_fork_servo.setPosition(fork_servo_power + .01);
-            left_fork_servo.setPosition(fork_servo_power + .02);  // the .01 and .02 are adjustments because our servos don't work right and aren't stopped unless at .51 and .52
+            right_fork_servo.setPosition(fork_servo_power);
+            left_fork_servo.setPosition(fork_servo_power - .01);  // the .01 and .02 are adjustments because our servos don't work right and aren't stopped unless at .51 and .52
             previous_fork_servo_power = fork_servo_power;
         }
 
@@ -336,7 +336,7 @@ public class PushBotTeleOp extends OpMode {
         }else if (gamepad2.dpad_down) {
             leveler_power = 0;
         } else{
-            leveler_power = 0.555;
+            leveler_power = 0.54;
         }
 
         if (previous_leveler_power != leveler_power){
