@@ -54,6 +54,159 @@ abstract class Gyro_Beacon extends LinearOpMode {
     private double wheel_diameter = 3.62;  // size of Matrix wheels
     public double ticks_per_inch = wheel_encoder_ticks / (wheel_diameter * 3.1416);
 
+    void gyro_beacon_blue_begin() {
+        go_forward(3, 0, .5, false, 0, false);
+        turn_to_heading(32);
+
+        // go to first white line
+        go_forward(58, 32, 1, true, 55, false);
+        if (!found_white) {
+            go_forward(9, 32, 1, false, 0, false);
+            turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
+            go_forward(10, 0, -.8, true, 0, false);
+        }
+
+        turn_to_heading(88);
+        go_forward(9, 90, .5, false, 0, true);
+
+        // hit first beacon
+        button_push("blue");
+
+        go_forward(10, 98, -.7, false, 0, false);
+
+        // shoot balls
+        Shoot();
+        sleep(1200);  // wait for next ball to roll in
+        Shoot();
+
+        // back up, get lined up
+        go_forward(3, 98, .5, false, 0, false);
+
+        // go to second white line
+        turn_to_heading(0);
+        go_forward(52, 0, 1, true, 39, false);
+
+        if (!found_white) {
+            turn_to_heading(345);  // If we missed the line, try to change angle before backing up.
+            go_forward(12, 345, -.3, true, 0, false);
+        }
+
+        turn_to_heading(90);
+        go_forward(9, 90, .5, false, 0, true);
+
+        // hit second beacon
+        button_push("blue");
+    }
+
+
+    void gyro_beacon_blue_center() {
+
+        gyro_beacon_blue_begin();
+
+        // back up
+        go_forward(14, 90, -1, false, 0, false);
+
+        // turn toward center
+        turn_to_heading(220);
+        go_forward(49, 220, 1, false, 0, false);
+
+        DbgLog.msg("10435 done");
+
+    } //end of gyro_beacon_blue
+
+
+    void gyro_beacon_blue_ramp() {
+
+        gyro_beacon_blue_begin();
+
+        // back up
+        go_forward(6, 90, -1, false, 0, false);
+
+        // turn toward center
+        turn_to_heading(180);
+        go_forward(72, 180, 1, false, 0, false);
+
+        DbgLog.msg("10435 done");
+
+    } //end of gyro_beacon_blue
+
+
+    void gyro_beacon_red_begin() {
+        // get lined up
+        go_forward(3, 0, .5, false, 0, false);
+        turn_to_heading(328);
+
+        // go to first white line
+        go_forward(58, 328, 1, true, 54, false);
+        if (!found_white) {
+            go_forward(9, 328, 1, false, 0, false);
+            turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
+            go_forward(7, 0, -.3, true, 0, false);
+        }
+
+        turn_to_heading(270);
+        go_forward(9, 270, .5, false, 0, true);
+
+        // hit first beacon
+        button_push("red");
+
+        // back up, line up
+        go_forward(10, 275, -.7, false, 0, false);
+
+        // shoot balls
+        Shoot();
+        sleep(500);  // wait for next ball to roll in
+        Shoot();
+
+        // go forawrd, get lined up
+        go_forward(3, 275, .5, false, 0, false);
+
+        // go to second white line
+        turn_to_heading(358);
+        go_forward(52, 358, 1, true, 39, false);
+
+        if (!found_white) {
+            turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
+            go_forward(12, 15, -.35, true, 0, false);
+        }
+
+        turn_to_heading(330);
+        turn_to_heading(270);
+        go_forward(9, 270, .5, false, 0, true);
+
+        // hit second beacon
+        button_push("red");
+    }
+
+
+    void gyro_beacon_red_center() {
+
+        gyro_beacon_red_begin();
+
+        // back up
+        go_forward(12, 270, -1, false, 0, false);
+
+        // turn toward center
+        turn_to_heading(140);
+        go_forward(49, 140, 1, false, 0, false);
+
+        DbgLog.msg("10435 done");
+    } //end of gyro_beacon_red
+
+
+    void gyro_beacon_red_ramp() {
+        gyro_beacon_red_begin();
+
+        // back up
+        go_forward(6, 270, -1, false, 0, false);
+
+        // turn toward center
+        turn_to_heading(178);
+        go_forward(72, 178, 1, false, 0, false);
+
+        DbgLog.msg("10435 done");
+    }
+
 
     void init_gyro_beacon() {
         Servo right_fork_servo;
@@ -160,7 +313,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
         }
         while (degrees_to_turn > .5 && opModeIsActive()) {
 
-            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 7) / 100;
+            wheel_power = (10 * Math.pow((degrees_to_turn + 13) / 40, 3) + 7) / 100;
 
             if (go_right) {
                 wheel_power = -wheel_power;
@@ -168,6 +321,63 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
             rightWheel.setPower(wheel_power);
             leftWheel.setPower(-wheel_power);
+
+            current_heading = gyro.getHeading();                                // get the new current reading
+            degrees_to_turn = Math.abs(target_heading - current_heading);       // Calculate how far is remaining to turn
+
+            go_right = target_heading > current_heading;
+
+            if (degrees_to_turn > 180) {
+                go_right = !go_right;
+                degrees_to_turn = 360 - degrees_to_turn;
+            }
+            //telemetry.addData("Wheel Power", wheel_power);
+            //telemetry.addData("Degrees to Turn", degrees_to_turn);
+            //telemetry.addData("Current Heading", current_heading);
+            //telemetry.update();
+
+        }
+
+        leftWheel.setPower(0);
+        rightWheel.setPower(0);
+        sleep(300);
+
+        DbgLog.msg("10435 ending turn_to_heading " + Double.toString(target_heading) + "  Attempted heading:" + Double.toString(current_heading) + "  Real current Heading:" + Double.toString(gyro.getHeading()));
+
+    } // end of turn_to_heading
+
+    void turn_to_heading_pirouette(double target_heading) {
+        boolean go_right;
+        double current_heading;
+        double degrees_to_turn;
+        double wheel_power;
+
+        DbgLog.msg("10435 starting turn_to_heading");
+
+        current_heading = gyro.getHeading();
+        degrees_to_turn = Math.abs(target_heading - current_heading);
+
+        go_right = target_heading > current_heading;
+
+        if (degrees_to_turn > 180) {
+            go_right = !go_right;
+            degrees_to_turn = 360 - degrees_to_turn;
+        }
+        while (degrees_to_turn > .5 && opModeIsActive()) {
+
+            wheel_power = (10 * Math.pow((degrees_to_turn + 15) / 40, 3) + 10) / 100;
+
+            if (go_right) {
+                wheel_power = -wheel_power;
+            }
+
+            if (go_right) {
+                rightWheel.setPower(wheel_power);
+                leftWheel.setPower(0);
+            } else {
+                rightWheel.setPower(0);
+                leftWheel.setPower(-wheel_power);
+            }
 
             current_heading = gyro.getHeading();                                // get the new current reading
             degrees_to_turn = Math.abs(target_heading - current_heading);       // Calculate how far is remaining to turn
@@ -215,6 +425,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         return new_speed;
     }
+
 
     private double go_straight_adjustment(int target_heading) {
 
@@ -329,6 +540,10 @@ abstract class Gyro_Beacon extends LinearOpMode {
             if (find_white && lowest_ticks_traveled > ticks_till_check) {
                 white_level_read = ODS.getLightDetected();
                 found_white = white_level_read > white_value;
+                speed = .2;
+                if (going_backwards) {
+                    speed = -speed;
+                }
             }
 
             if (use_touch_sensor) {
@@ -383,10 +598,10 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         if (BorR.equals("blue")) {
             current_color = 0x07;
-            color_good = 8;
+            color_good = 6;
         } else if (BorR.equals("red")) {
             current_color = 0x05;
-            color_good = 4;
+            color_good = 3;
         }
 
         // Do the first color reads
@@ -425,6 +640,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
     }  // end of button_push
 
+
     void beacon_cleanup(String BorR) {
 
         double btn_servo_degrees = .4;
@@ -442,6 +658,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
         sleep(500);
         btn_servo.setPosition(init_btn_servo_position);
     }
+
 
     String beacon_reads(String BorR) {
 

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 /**
  * Created by Drew on 3/19/2017.
  */
-@Autonomous(name = "Beacon_CleanUp_Test", group = "Tests and Calibration")
+
 public class Beacon_CleanUp_Test extends Gyro_Beacon {
     public void runOpMode() throws InterruptedException {
         init_gyro_beacon();

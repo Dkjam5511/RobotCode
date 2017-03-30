@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 /**
  * Created by Drew on 3/18/2017.
  */
-@Autonomous(name = "Inches_To_Ticks_Test", group = "Tests and Calibration")
+
 public class Inches_To_Ticks_Test extends Gyro_Beacon {
 
     public void runOpMode() throws InterruptedException {

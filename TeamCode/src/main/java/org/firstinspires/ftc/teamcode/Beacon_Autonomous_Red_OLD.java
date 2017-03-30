@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 
-public class Beacon_Autonomous_Red extends LinearOpMode {
+public class Beacon_Autonomous_Red_OLD extends LinearOpMode {
 
     //Hardware
     Servo ball_gate_servo;

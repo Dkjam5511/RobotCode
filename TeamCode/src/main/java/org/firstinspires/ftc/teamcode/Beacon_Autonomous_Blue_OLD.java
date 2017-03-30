@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODERS;
 
 
-public class Beacon_Autonomous_Blue extends LinearOpMode {
+public class Beacon_Autonomous_Blue_OLD extends LinearOpMode {
 
     //Hardware
     Servo ball_gate_servo;
