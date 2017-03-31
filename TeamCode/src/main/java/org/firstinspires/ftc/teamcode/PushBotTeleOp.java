@@ -43,7 +43,7 @@ public class PushBotTeleOp extends OpMode {
     double LeftStick_x;
     double ReductionFactor;
     double dpad_speed = .16;
-    double dpad_turn_speed = .18;
+    double dpad_turn_speed = .21;
     double fork_servo_power;
     double previous_fork_servo_power = .51;
     double LiftPower;

@@ -22,12 +22,6 @@ public class Gyro_Beacon_Red_Center extends Gyro_Beacon {
 
         waitForStart();
 
-        /*
-         *******************************************************
-         *****************  Main Control ***********************
-         *******************************************************
-         */
-
         gyro_beacon_red_center();
 
     } // end of RunOpMode

@@ -29,14 +29,14 @@ public class Shoot_Cap_Ramp_Blue extends Gyro_Beacon {
         Shoot();
         sleep(1200);  // wait for next ball to roll in
         Shoot();
-        turn_to_heading(70);  //75
-        go_forward(32, 70, -1, false, 0, false); //75
+        turn_to_heading(62);  //75
+        go_forward(33, 62, -1, false, 0, false); //75
         turn_to_heading_pirouette(280); //260
         turn_to_heading_pirouette(225); //260
         //turn_to_heading(15);
         //turn_to_heading(135);
         turn_to_heading(325);
-        go_forward(37, 325, 1, false, 0, false);
+        go_forward(39, 325, 1, false, 0, false);
 
 
 

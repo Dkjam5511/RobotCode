@@ -38,7 +38,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
     private ElapsedTime ShootMotorRuntime = new ElapsedTime();
 
     // Output of the go_straight function
-    boolean found_white = false;
+    public boolean found_white = false;
 
     double gs_previous_speed;
     double gs_previous_ticks_traveled;
@@ -59,14 +59,14 @@ abstract class Gyro_Beacon extends LinearOpMode {
         turn_to_heading(32);
 
         // go to first white line
-        go_forward(58, 32, 1, true, 55, false);
+        go_forward(60, 32, 1, true, 56, false);
         if (!found_white) {
-            go_forward(9, 32, 1, false, 0, false);
+            go_forward(7, 32, 1, false, 0, false);
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(10, 0, -.8, true, 0, false);
         }
 
-        turn_to_heading(88);
+        turn_to_heading(89);
         go_forward(9, 90, .5, false, 0, true);
 
         // hit first beacon
@@ -108,7 +108,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         // turn toward center
         turn_to_heading(220);
-        go_forward(49, 220, 1, false, 0, false);
+        go_forward(44, 220, 1, false, 0, false);
 
         DbgLog.msg("10435 done");
 
@@ -133,18 +133,18 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
     void gyro_beacon_red_begin() {
         // get lined up
-        go_forward(3, 0, .5, false, 0, false);
+        go_forward(3, 0, .5, false, 1, false);
         turn_to_heading(328);
 
         // go to first white line
-        go_forward(58, 328, 1, true, 54, false);
+        go_forward(60, 328, 1, true, 54, false);
         if (!found_white) {
-            go_forward(9, 328, 1, false, 0, false);
+            go_forward(7, 328, 1, false, 0, false);
             turn_to_heading(0);  // If we missed the line, try to change angle before backing up.
             go_forward(7, 0, -.3, true, 0, false);
         }
 
-        turn_to_heading(270);
+        turn_to_heading(269);
         go_forward(9, 270, .5, false, 0, true);
 
         // hit first beacon
@@ -163,7 +163,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         // go to second white line
         turn_to_heading(358);
-        go_forward(52, 358, 1, true, 39, false);
+        go_forward(52, 358, 1, true, 37, false);
 
         if (!found_white) {
             turn_to_heading(15);  // If we missed the line, try to change angle before backing up.
@@ -188,7 +188,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
 
         // turn toward center
         turn_to_heading(140);
-        go_forward(49, 140, 1, false, 0, false);
+        go_forward(44, 140, 1, false, 0, false);
 
         DbgLog.msg("10435 done");
     } //end of gyro_beacon_red
@@ -472,7 +472,7 @@ abstract class Gyro_Beacon extends LinearOpMode {
         boolean touch_sensor_pressed = false;
         boolean destination_reached = false;
         boolean going_backwards = false;
-        double white_value = .7;
+        double white_value = .9;
         double white_level_read = 0;
         double speed_increase = .05;
         double actual_speed;
@@ -534,13 +534,17 @@ abstract class Gyro_Beacon extends LinearOpMode {
                 previous_ticks_traveled_L = ticks_traveled_L;
             }
 
-
             destination_reached = (lowest_ticks_traveled >= ticks_to_travel);
+
+            remaining_inches = inches_to_travel - ((double) lowest_ticks_traveled / ticks_per_inch);
 
             if (find_white && lowest_ticks_traveled > ticks_till_check) {
                 white_level_read = ODS.getLightDetected();
                 found_white = white_level_read > white_value;
                 speed = .2;
+                if (previous_log_timer > .09) {
+                    DbgLog.msg("10435 go_forward finding white: remaining_inches:" + Double.toString(remaining_inches) + " white_level read" + Double.toString(white_level_read));
+                }
                 if (going_backwards) {
                     speed = -speed;
                 }
@@ -550,7 +554,6 @@ abstract class Gyro_Beacon extends LinearOpMode {
                 touch_sensor_pressed = touchSensor.isPressed();
             }
 
-            remaining_inches = inches_to_travel - ((double) lowest_ticks_traveled / ticks_per_inch);
 
             if (remaining_inches <= actual_speed && Math.abs(speed) > .2) {
                 speed = .2;
